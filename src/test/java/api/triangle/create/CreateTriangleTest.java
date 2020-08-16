@@ -49,6 +49,33 @@ public class CreateTriangleTest {
         TriangleApiSteps.checkCreateTriangleRequest(createTriangleBody, testTriangle);
     }
 
+    @Test
+    @DisplayName("Проверяем, что можно сохранить только 10 треугольников")
+    @Description("Выполняем запрос POST /triangle 10 раз и провреяем, что в 11-й раз система не даст сохранить треугольник")
+    public void post_createTriangle_checkLimit() {
+        TestTriangle testTriangle = new TestTriangle(3,4, 5);
+        CreateTriangle createTriangle = new CreateTriangle("!", testTriangle.toString("!"));
+
+        TriangleApiSteps.deleteTriangles();
+
+        for (int i=0; i<10; i++) {
+            triangleRequest
+                    .when()
+                    .body(createTriangle)
+                    .post(TriangleApi.getPostTriangle());
+        }
+        Response response = triangleRequest
+                .body(createTriangle)
+                .when()
+                .post(TriangleApi.getPostTriangle());
+
+        response.then().specification(TriangleApiSpec.getErrorResponseSpecification());
+
+        Error createTriangleBody = response.then().extract().body().as(Error.class);
+
+        TriangleApiSteps.checkTriangleApiLimitExceededError(createTriangleBody);
+    }
+
     @ParameterizedTest(name = "{displayName} со сторонами {arguments}")
     @CsvSource({"1,1,2", "1,2,1", "2,1,1"})
     @DisplayName("Создаем невалидный треугольник")

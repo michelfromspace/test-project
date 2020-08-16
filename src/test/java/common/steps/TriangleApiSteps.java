@@ -42,7 +42,7 @@ public class TriangleApiSteps {
         Assertions.assertEquals(testTriangle.getSideC(), createTriangleBody.getThirdSide(),0);
     }
 
-    @Step("Проверяем ответ из запроса на получение")
+    @Step("Проверяем ответ из запроса на получение треугольника - в запросе должны быть корректные значения для длинн строн, а так же должно быть поле id")
     public static void checkGetTriangleRequest(GetTriangle getTriangleBody, TestTriangle testTriangle, String id) {
         Assertions.assertEquals(getTriangleBody.getId(), id);
         Assertions.assertEquals(testTriangle.getSideA(), getTriangleBody.getFirstSide(), 0);
@@ -56,6 +56,15 @@ public class TriangleApiSteps {
         Assertions.assertEquals("Unprocessable Entity", error.getError());
         Assertions.assertEquals("Cannot process input", error.getMessage());
         Assertions.assertEquals(path, error.getPath());
+        Assertions.assertEquals(422, error.getStatus());
+    }
+
+    @Step("Проверяем, что система не дает сохранять больше 10 треугольников и возвращает ошибку - 'Limit exceeded'")
+    public static void checkTriangleApiLimitExceededError(Error error) {
+        Assertions.assertNotNull(error.getTimestamp());
+        Assertions.assertEquals("Unprocessable Entity", error.getError());
+        Assertions.assertEquals("Limit exceeded", error.getMessage());
+        Assertions.assertEquals(TriangleApi.getPostTriangle(), error.getPath());
         Assertions.assertEquals(422, error.getStatus());
     }
 
