@@ -1,6 +1,8 @@
 package data.triangle.util;
 
 
+import java.util.Locale;
+
 public class TestTriangle {
 
     private double sideA;
@@ -41,11 +43,11 @@ public class TestTriangle {
 
     @Override
     public String toString() {
-        return String.format("%.0f;%.0f;%.0f", sideA, sideB, sideC);
+        return String.format(Locale.US, "%.10f;%.10f;%.10f", sideA, sideB, sideC);
     }
 
     public String toString(String separator) {
-        return String.format("%.0f%s%.0f%s%.0f", sideA, separator, sideB, separator, sideC);
+        return String.format(Locale.US, "%.10f%s%.10f%s%.10f", sideA, separator, sideB, separator, sideC);
     }
 
 

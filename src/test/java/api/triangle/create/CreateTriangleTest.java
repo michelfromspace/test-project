@@ -18,10 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class CreateTestTriangleApiTest {
+public class CreateTriangleTest {
 
-    RequestSpecification REQUEST = RestAssured.given().spec(TriangleApiSpec.getRequestSpecification());
-    RequestSpecification REQUEST_NO_AUTH = RestAssured.given().spec(TriangleApiSpec.getRequestSpecificationNoAuth());
+    private RequestSpecification triangleRequest = RestAssured.given().spec(TriangleApiSpec.getRequestSpecification());
+    private RequestSpecification triangleRequestNoAuth = RestAssured.given().spec(TriangleApiSpec.getRequestSpecificationNoAuth());
 
 
     @AfterAll
@@ -30,14 +30,14 @@ public class CreateTestTriangleApiTest {
     }
 
     @ParameterizedTest(name = "{displayName} со сторонами {arguments}")
-    @CsvSource({"2,2,3", "2,3,2", "3,2,2"})
+    @CsvSource({"2.2244,2.2244,3.0", "2,3.0001,2", "3,2,2"})
     @DisplayName("Создаем валидный треугольник")
     @Description("Выполняем запрос POST /triangle и проверяем корректность созданного объекта")
     public void post_createTriangle_valid(double sideA, double sideB, double sideC) {
         TestTriangle testTriangle = new TestTriangle(sideA,sideB,sideC);
-        CreateTriangle createTriangle = new CreateTriangle(";", testTriangle.toString(";"));
+        CreateTriangle createTriangle = new CreateTriangle("!", testTriangle.toString("!"));
 
-        Response response = REQUEST
+        Response response = triangleRequest
                 .body(createTriangle)
                 .when()
                 .post(TriangleApi.getPostTriangle());
@@ -57,7 +57,7 @@ public class CreateTestTriangleApiTest {
         TestTriangle testTriangle = new TestTriangle(sideA,sideB,sideC);
         CreateTriangle createTriangle = new CreateTriangle(";", testTriangle.toString(";"));
 
-        Response response = REQUEST
+        Response response = triangleRequest
                 .body(createTriangle)
                 .when()
                 .post(TriangleApi.getPostTriangle());
@@ -77,7 +77,7 @@ public class CreateTestTriangleApiTest {
         TestTriangle testTriangle = new TestTriangle(0,0,0);
         CreateTriangle createTriangle = new CreateTriangle(";", testTriangle.toString(";"));
 
-        Response response = REQUEST
+        Response response = triangleRequest
                 .body(createTriangle)
                 .when()
                 .post(TriangleApi.getPostTriangle());
@@ -94,7 +94,7 @@ public class CreateTestTriangleApiTest {
     @Description("Проверяем, что не получится выполнить операцию создания, если не передан корректный заголовок X-User")
     public void post_createTriangle_incorrectToken() {
         CreateTriangle createTriangle = new CreateTriangle(";", "1,1,1");
-        Response response = REQUEST_NO_AUTH
+        Response response = triangleRequestNoAuth
                 .header("X-User", "incorrect_value")
                 .body(createTriangle)
                 .when()
