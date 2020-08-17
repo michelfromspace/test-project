@@ -60,12 +60,16 @@ public class GetTrianglesTest {
                 .when()
                 .body(createFirstTriangle)
                 .post(TriangleApi.getPostTriangle());
+
+        createFirstResponse.then().specification(TriangleApiSpec.getOkResponseSpecification());
         Triangle createFirstTriangleResponse = createFirstResponse.then().extract().body().as(Triangle.class);
 
         Response createSecondResponse = triangleRequest
                 .when()
                 .body(createSecondTriangle)
                 .post(TriangleApi.getPostTriangle());
+
+        createSecondResponse.then().specification(TriangleApiSpec.getOkResponseSpecification());
         Triangle createSecondTriangleResponse = createSecondResponse.then().extract().body().as(Triangle.class);
 
         Response getResponse = triangleGetRequest

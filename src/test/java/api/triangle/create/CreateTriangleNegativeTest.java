@@ -28,25 +28,11 @@ public class CreateTriangleNegativeTest {
         TriangleApiSteps.deleteTriangles();
     }
 
-    @ParameterizedTest(name = "{displayName} с разделителем {arguments}")
-    @CsvSource({"+", "\\", "*"})
-    @DisplayName("Создаем валидный треугольник")
-    @Description("Выполняем запрос POST /triangle и проверяем корректность созданного объекта")
-    public void post_createTriangle_separators(String separator) {
-        TestTriangle testTriangle = new TestTriangle(4,13,15);
-        CreateTriangle createTriangle = new CreateTriangle(separator, testTriangle.toString(";"));
-
-        Response response = triangleRequest
-                .body(createTriangle)
-                .when()
-                .post(TriangleApi.getPostTriangle());
-
-        response.then().specification(TriangleApiSpec.getOkResponseSpecification());
-
-        Triangle createTriangleBody = response.then().extract().body().as(Triangle.class);
-
-        TriangleApiSteps.checkCreateTriangleRequest(createTriangleBody, testTriangle);
-    }
+    /**
+     * BUG!
+     * Длины треугольника не должны иметь отрицательного значения
+     * и система должна возвращать ошибку при попытке создаьт такой треугольник
+     **/
 
     @ParameterizedTest(name = "{displayName} со сторонами {arguments}")
     @CsvSource({"-4,13,15", "3,-25,26", "7,15,-20", "-6,25,-29"})
@@ -89,6 +75,11 @@ public class CreateTriangleNegativeTest {
         Allure.step("Треугольник не должен быть создан, т.к. одна из длин сторон отрицательная");
     }
 
+    /**
+     * BUG!
+     * В случае, когда мы передаем input=null система возвращает ошибку
+     * с 500 кодом ответа, хотя для ошибок служит 422 код
+     **/
     @ParameterizedTest(name = "{displayName}, body = {arguments}")
     @CsvSource({",3:4:5", ";,"})
     @DisplayName("Выполняем запрос без обязательных полей в body")
